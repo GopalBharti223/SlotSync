@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SlotSync.DTOs;
 using SlotSync.Models;
 
 namespace SlotSync.Controllers
@@ -19,10 +20,28 @@ namespace SlotSync.Controllers
         [HttpGet]
         public async Task<IActionResult> GetVenues()
         {
-            var venues = await _context.Venues.ToListAsync();
+            var venues = await _context.Venues
+                .Include(v => v.Slots)
+                .Select(v => new VenueWithSlotsResponseDto
+                {
+                    VenueId = v.VenueId,
+                    Name = v.Name,
+                    VenueType = v.VenueType,
+                    Capacity = v.Capacity,
+
+                    Slots = v.Slots.Select(s => new SlotResponseDto
+                    {
+                        SlotId = s.SlotId,
+                        Cost = s.Cost,
+                        StartTime = s.StartTime,
+                        EndTime = s.EndTime
+                    }).ToList()
+                })
+                .ToListAsync();
 
             return Ok(venues);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> getVeenue(int id)

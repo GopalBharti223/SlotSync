@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SlotSync.Models;
@@ -38,6 +39,7 @@ namespace SlotSync.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateSlot(Slot slot)
         {
@@ -51,7 +53,7 @@ namespace SlotSync.Controllers
 
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSlot(int id, Slot slot)
         {
@@ -72,6 +74,7 @@ namespace SlotSync.Controllers
             return Ok(existingSlot);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSlot(int id)
         {
